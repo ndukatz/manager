@@ -1,13 +1,13 @@
-import { worker } from '../../../src/mocks/testBrowser';
+// import { worker } from '@src/mocks/testBrowser';
 import { waitForAppLoad } from '../../support/ui/common';
 const oauthtoken = Cypress.env('MANAGER_OAUTH');
 import {
   notificationFactory,
   abuseTicketNotificationFactory,
-} from '../../../src/factories/notification';
+} from '@src/factories/notification';
 import { createLinode } from '../../support/api/linodes';
 import { containsVisible, getVisible } from '../../support/helpers';
-import { makeResourcePage } from '../../../src/mocks/serverHandlers';
+import { makeResourcePage } from '@src/mocks/serverHandlers';
 
 const abuseTicket = abuseTicketNotificationFactory.build();
 
@@ -33,16 +33,16 @@ describe('notifications', () => {
       });
       cy.visitWithLogin('/linodes');
       waitForAppLoad();
-      worker.start();
+      // worker.start();
       cy.get(`[data-qa-linode="${linode.label}"]`).within(() => {
         containsVisible('Running');
       });
-      //   cy.intercept('GET', '/account/notifications', (req) => {
-      //     req.reply((res) => {
-      //       res.send(makeResourcePage(migrationTicket));
-      //     });
-      //   }).as('mockNotification');
-      //   waitForAppLoad('@mockNotification');
+      cy.intercept('GET', '/account/notifications', (req) => {
+        req.reply((res) => {
+          res.send(makeResourcePage(migrationTicket));
+        });
+      }).as('mockNotification');
+      waitForAppLoad('@mockNotification');
     });
   });
 });
